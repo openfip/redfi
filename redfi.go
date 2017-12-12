@@ -120,8 +120,6 @@ func (p *Proxy) faulter(dst, src net.Conn) {
 			continue
 		}
 
-		// @TODO(kl): get those from an engine that understands the plan.json
-		log.Println(string(buf))
 		rule := p.plan.SelectRule(src.RemoteAddr().String(), buf)
 
 		if rule != nil {
@@ -130,6 +128,14 @@ func (p *Proxy) faulter(dst, src net.Conn) {
 			}
 
 			if rule.Drop {
+				err = src.Close()
+				if err != nil {
+					log.Println("encountered error while closing srcConn", err)
+				}
+				break
+			}
+
+			if rule.ReturnEmpty {
 				_, err = dst.Write([]byte("$-1\r\n"))
 				if err != nil {
 					log.Println(err)

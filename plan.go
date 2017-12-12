@@ -24,9 +24,10 @@ type Plan struct {
 
 // Rule is what get's applied on every client message iff it matches it
 type Rule struct {
-	Delay      int  `json:"delay,omitempty"`
-	Drop       bool `json:"drop,omitempty"`
-	Percentage int  `json:"percentage,omitempty"`
+	Delay       int  `json:"delay,omitempty"`
+	Drop        bool `json:"drop,omitempty"`
+	ReturnEmpty bool `json:"return_empty,omitempty"`
+	Percentage  int  `json:"percentage,omitempty"`
 	// SelectRule does prefix matching on this value
 	ClientAddr string `json:"client_addr,omitempty"`
 	Command    string `json:"command,omitempty"`
