@@ -76,5 +76,7 @@ Don't forget to point your client to that address.
 
 ## Project Status
 RedFI is still in its early stages, so expect rapid changes.
+
 Also, for now, we advise you to use the proxy in development and staging area only.
+
 If you want to use it in production, you should limit the percentage of connections you send to the proxy.
