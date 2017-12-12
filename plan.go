@@ -58,7 +58,13 @@ func Parse(planPath string) (*Plan, error) {
 		return nil, err
 	}
 
-	for _, rule := range plan.Rules {
+	plan.MarshalCommands()
+
+	return plan, nil
+}
+
+func (p *Plan) MarshalCommands() {
+	for _, rule := range p.Rules {
 		if rule == nil {
 			continue
 		}
@@ -66,8 +72,6 @@ func Parse(planPath string) (*Plan, error) {
 			rule.marshaledCmd = marshalCommand(rule.Command)
 		}
 	}
-
-	return plan, nil
 }
 
 func marshalCommand(cmd string) []byte {
