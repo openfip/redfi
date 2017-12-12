@@ -18,9 +18,7 @@ These tests should also be part of your CI, to catch code changes that might int
 This would help you understand the limits of your system, and how resilient it is against Redis' failures.
 
 ## How it Works
-RedFI is a proxy that sets between the client and the actual Redis server.  
-On every incoming command from the client,  
-it checks the list of failure rules provided by you, and then it applies the first rule that matches the request.
+RedFI is a proxy that sets between the client and the actual Redis server. On every incoming command from the client, it checks the list of failure rules provided by you, and then it applies the first rule that matches the request.
 
 ## Usage
 First, download the [latest binary](https://github.com/redfi/redfi/releases/tag/v0.1).
