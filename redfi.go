@@ -14,7 +14,7 @@ import (
 type Proxy struct {
 	server   string
 	plan     *Plan
-	bind     string
+	addr     string
 	connPool pool.Pool
 }
 
@@ -41,16 +41,18 @@ func New(planPath, server, addr string) (*Proxy, error) {
 		server:   server,
 		connPool: p,
 		plan:     plan,
-		bind:     addr,
+		addr:     addr,
 	}, nil
 }
 
 func (p *Proxy) Start() error {
-	fmt.Println("RedFI: a Redis Fault-Injection Proxy")
-	ln, err := net.Listen("tcp", p.bind)
+	ln, err := net.Listen("tcp", p.addr)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println("RedFI is listening on ", p.addr)
+	fmt.Println("Don't forget to point your client to that address.")
 
 	for {
 		conn, err := ln.Accept()

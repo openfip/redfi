@@ -58,9 +58,23 @@ func Parse(planPath string) (*Plan, error) {
 		return nil, err
 	}
 
+	err = plan.check()
+	if err != nil {
+		return nil, err
+	}
+
 	plan.MarshalCommands()
 
 	return plan, nil
+}
+
+func (p *Plan) check() error {
+	for idx, rule := range p.Rules {
+		if rule.Percentage < 0 || rule.Percentage > 100 {
+			return fmt.Errorf("Percentage in rule #%d is malformed. it must within 0-100", idx)
+		}
+	}
+	return nil
 }
 
 func (p *Plan) MarshalCommands() {
