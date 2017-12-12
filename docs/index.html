@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta content="IE=edge" http-equiv=X-UA-Compatible>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <title>RedFI: Redis Fault-Injection Proxy</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+        <link rel="stylesheet" href="static/app.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row justify-content-md-center header">
+                <div class="col-lg-5">
+                    <img src="static/credfi@2x.png" width="100%">
+                    <!-- <p class="text-center">RedFI acts as a proxy between the client and Redis with the capability of injecting faults on the fly, based on the rules given by you.</p> -->
+                    
+
+                </div>
+            </div>
+        </div>
+        <!-- <div class="container" id="features">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="">
+                            <span class="fa fa-terminal fa-5x"></span>
+                    </div>
+                    <h6>Easy to use</h6>
+                    <p>It's just a binary that you run. It has no dependencies whatsoever. </p>
+                </div>
+                <div class="col-lg-3">
+                        <div class="">
+                            <span class="fa fa-exchange fa-5x"></span>
+                        </div>
+                        <h6>Transparent to the client</h6>
+                        <p>Client connects to it as if it was a redis server. Helps when you want to test blackbox systems.</p>
+                    </div>
+                    <div class="col-lg-3">
+                            <div class="">
+                                <span class="fa fa-database fa-5x"></span>
+                            </div>
+                            <h6>Understands Redis Commands</h6>
+                            <p>RedFI is capable of injecting failures on a command level. So you could different rules for different commands</p>
+                    </div>
+                    <div class="col-lg-3">
+                            <div class="">
+                                <span class="fa fa-chain-broken fa-5x"></span>
+                            </div>
+                            <h5>Flexible Fault Injection</h5>
+                            <p>Through JSON config, you could define failures for certain commands.</p>
+                    </div>
+            </div>
+        </div> -->
+        <div class="container" id="features">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-2">
+                                <span class="fa fa-terminal fa-5x"></span>
+                        </div>
+                        <div class="col">
+                            <h5>Easy to use</h5>
+                            <p>It's just a binary that you run. It has no dependencies whatsoever!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <span class="fa fa-exchange fa-5x"></span>
+                        </div>
+                        <div class="col">
+                            <h5>Transparent to the client</h5>
+                            <p>The client connects to RedFI which proxy the connection to the Redis server. It also help when you test blackbox systems</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-2">
+                                <span class="fa fa-database fa-5x"></span>
+                        </div>
+                        <div class="col">
+                            <h5>Understands Redis Commands</h5>
+                            <p>RedFI is capable of injecting failures on a command level. So you could different rules for different commands</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <span class="fa fa-chain-broken fa-5x"></span>
+                        </div>
+                        <div class="col">
+                            <h5>Flexible Fault Injection</h5>
+                            <p>Through JSON config, you could define the kind of failures you want, like response delays, connection drops, nil replies. Limit the failure for certain clients or percentage of commands.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container" id="action-buttons">
+            <div class="row justify-content-md-center">
+                    <ul class="nav justify-content-center">
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-shallow" href="https://github.com/redfi/redfi#usage">Getting Started</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-primary" href="https://github.com/redfi/redfi">Star on Github</a>
+                            </li>
+                        </ul>
+            </div>
+        </div>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    </body>
+</html>
