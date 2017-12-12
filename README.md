@@ -1,5 +1,7 @@
 # RedFI
 Test the resiliency of your application against Redis' failures.
+![RedFI: Redis Fault-Injection Proxy](https://raw.githubusercontent.com/redfi/redfi/master/static/redfi.png =300x)
+
 
 RedFI acts as a proxy between the client and redis with the capability
 of injecting faults on the fly, based off the rules given by you.
