@@ -13,10 +13,8 @@ of injecting faults on the fly, based on the rules given by you.
 
 ## Why?
 We believe that to gain trust in your system,
-you must test it against various scenarios of failures, before deploying it to production.
-
-These tests should also be part of your CI, to catch code changes that might introduce regressions.
-
+you must test it against various scenarios of failures, before deploying it to production.  
+These tests should also be part of your CI, to catch code changes that might introduce regressions.  
 This would help you understand the limits of your system, and how resilient it is against Redis' failures.
 
 ## How it Works
