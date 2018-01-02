@@ -41,3 +41,39 @@ func TestSelectRule(t *testing.T) {
 	}
 
 }
+
+func TestAddRemoveGetRule(t *testing.T) {
+	p := NewPlan()
+
+	r := Rule{
+		Name:       "clients_delay",
+		Delay:      50,
+		Percentage: 20,
+	}
+	p.AddRule(r)
+
+	if len(p.Rules) != 1 {
+		t.Fatal("rule wasn't added")
+	}
+	if !(p.Rules[0].Delay == r.Delay && p.Rules[0].Percentage == r.Percentage) {
+		t.Fatal("rule added doesn't match")
+	}
+
+	fetchedRule, err := p.GetRule("clients_delay")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(fetchedRule)
+
+	err = p.RemoveRule("clients_delay")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = p.GetRule("clients_delay")
+	if err == nil {
+		t.Fatal(err)
+	}
+	fmt.Println(fetchedRule)
+
+}

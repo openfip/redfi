@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 var (
@@ -20,14 +21,19 @@ var (
 // Plan defines a set of rules to be applied by the proxy
 type Plan struct {
 	Rules []*Rule `json:"rules,omitempty"`
+	// a lookup table mapping rule name to index in the array
+	rulesMap map[string]int
+
+	m sync.RWMutex
 }
 
 // Rule is what get's applied on every client message iff it matches it
 type Rule struct {
-	Delay       int  `json:"delay,omitempty"`
-	Drop        bool `json:"drop,omitempty"`
-	ReturnEmpty bool `json:"return_empty,omitempty"`
-	Percentage  int  `json:"percentage,omitempty"`
+	Name        string `json:"name,omiempty"`
+	Delay       int    `json:"delay,omitempty"`
+	Drop        bool   `json:"drop,omitempty"`
+	ReturnEmpty bool   `json:"return_empty,omitempty"`
+	Percentage  int    `json:"percentage,omitempty"`
 	// SelectRule does prefix matching on this value
 	ClientAddr string `json:"client_addr,omitempty"`
 	Command    string `json:"command,omitempty"`
@@ -52,20 +58,36 @@ func Parse(planPath string) (*Plan, error) {
 		return nil, err
 	}
 
+	// this is the plan we will use
 	plan := &Plan{}
-	err = json.Unmarshal(buf, plan)
+
+	// this is a draft of the plan
+	// we use to parse the json file,
+	// then copy its rules to the real plan
+	pd := &Plan{}
+	err = json.Unmarshal(buf, pd)
 	if err != nil {
 		return nil, err
 	}
 
-	err = plan.check()
-	if err != nil {
-		return nil, err
+	for i, rule := range pd.Rules {
+		if rule == nil {
+			continue
+		}
+		err := plan.AddRule(*rule)
+		if err != nil {
+			return plan, fmt.Errorf("encountered error when adding rule #%d: %s", i, err)
+		}
 	}
-
-	plan.MarshalCommands()
 
 	return plan, nil
+}
+
+func NewPlan() *Plan {
+	return &Plan{
+		Rules:    []*Rule{},
+		rulesMap: map[string]int{},
+	}
 }
 
 func (p *Plan) check() error {
@@ -116,4 +138,53 @@ func (p *Plan) SelectRule(clientAddr string, buf []byte) *Rule {
 		return nil
 	}
 	return chosenRule
+}
+
+// AddRule adds a rule to the current working plan
+func (p *Plan) AddRule(r Rule) error {
+	if r.Percentage < 0 || r.Percentage > 100 {
+		return fmt.Errorf("Percentage in rule #%s is malformed. it must within 0-100", r.Name)
+	}
+
+	if len(r.Command) > 0 {
+		r.marshaledCmd = marshalCommand(r.Command)
+	}
+
+	p.m.Lock()
+	defer p.m.Unlock()
+
+	p.Rules = append(p.Rules, &r)
+	p.rulesMap[r.Name] = len(p.Rules) - 1
+
+	return nil
+}
+
+// RemoveRule deletes the given ruleName if found
+// otherwise it returns ErrNotFound
+func (p *Plan) RemoveRule(name string) error {
+	p.m.Lock()
+	defer p.m.Unlock()
+
+	idx, ok := p.rulesMap[name]
+	if !ok {
+		return ErrNotFound
+	}
+
+	p.Rules = append(p.Rules[:idx], p.Rules[idx+1:]...)
+	delete(p.rulesMap, name)
+
+	return nil
+}
+
+// GetRule returns the rule that matches the given name
+func (p *Plan) GetRule(name string) (Rule, error) {
+	p.m.RLock()
+	defer p.m.RUnlock()
+
+	idx, ok := p.rulesMap[name]
+	if !ok {
+		return Rule{}, ErrNotFound
+	}
+
+	return *p.Rules[idx], nil
 }
