@@ -17,12 +17,6 @@ var (
 func main() {
 	flag.Parse()
 
-	if len(*planPath) == 0 {
-		flag.Usage()
-		fmt.Println("\n[ERROR]: -plan can't be empty")
-		os.Exit(1)
-	}
-
 	proxy, err := redfi.New(*planPath, *server, *addr)
 	if err != nil {
 		fmt.Println(err)

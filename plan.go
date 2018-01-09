@@ -59,7 +59,7 @@ func Parse(planPath string) (*Plan, error) {
 	}
 
 	// this is the plan we will use
-	plan := &Plan{}
+	plan := &Plan{rulesMap: map[string]int{}}
 
 	// this is a draft of the plan
 	// we use to parse the json file,
@@ -187,4 +187,18 @@ func (p *Plan) GetRule(name string) (Rule, error) {
 	}
 
 	return *p.Rules[idx], nil
+}
+
+// ListRules returns a slice of all the existing rules
+// the slice will be empty if Plan has no rules
+func (p *Plan) ListRules() []Rule {
+	p.m.RLock()
+	defer p.m.RUnlock()
+
+	rules := []Rule{}
+	for _, rule := range p.Rules {
+		rules = append(rules, *rule)
+	}
+
+	return rules
 }

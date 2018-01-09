@@ -5,9 +5,12 @@ import (
 	"io"
 	"log"
 	"net"
+	"net/http"
 	"sync"
 	"time"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	pool "gopkg.in/fatih/pool.v2"
 )
 
@@ -16,6 +19,7 @@ type Proxy struct {
 	plan     *Plan
 	addr     string
 	connPool pool.Pool
+	api      *API
 }
 
 func factory(server string) func() (net.Conn, error) {
@@ -31,10 +35,13 @@ func New(planPath, server, addr string) (*Proxy, error) {
 		return nil, err
 	}
 
-	// parse the failures plan
-	plan, err := Parse(planPath)
-	if err != nil {
-		return nil, err
+	plan := NewPlan()
+	if len(planPath) > 0 {
+		// parse the failures plan
+		plan, err = Parse(planPath)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &Proxy{
@@ -42,7 +49,35 @@ func New(planPath, server, addr string) (*Proxy, error) {
 		connPool: p,
 		plan:     plan,
 		addr:     addr,
+		api:      NewAPI(plan),
 	}, nil
+}
+
+func (p *Proxy) startAPI() {
+	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(60 * time.Second))
+
+	// RESTy routes for "rules" resource
+	r.Route("/rules", func(r chi.Router) {
+		r.Get("/", p.api.listRules) // GET /rules
+
+		r.Post("/", p.api.createRule) // POST /rules
+
+		// Subrouters:
+		r.Route("/{ruleName}", func(r chi.Router) {
+			r.Get("/", p.api.getRule)       // GET /rules/drop_20
+			r.Delete("/", p.api.deleteRule) // DELETE /rules/drop_20
+		})
+	})
+
+	err := http.ListenAndServe(":3000", r)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (p *Proxy) Start() error {
@@ -53,6 +88,7 @@ func (p *Proxy) Start() error {
 
 	fmt.Println("RedFI is listening on ", p.addr)
 	fmt.Println("Don't forget to point your client to that address.")
+	go p.startAPI()
 
 	for {
 		conn, err := ln.Accept()
