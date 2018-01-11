@@ -159,9 +159,9 @@ func (p *Plan) AddRule(r Rule) error {
 	return nil
 }
 
-// RemoveRule deletes the given ruleName if found
+// DeleteRule deletes the given ruleName if found
 // otherwise it returns ErrNotFound
-func (p *Plan) RemoveRule(name string) error {
+func (p *Plan) DeleteRule(name string) error {
 	p.m.Lock()
 	defer p.m.Unlock()
 

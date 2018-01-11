@@ -42,7 +42,7 @@ func TestSelectRule(t *testing.T) {
 
 }
 
-func TestAddRemoveGetRule(t *testing.T) {
+func TestAddDeleteGetRule(t *testing.T) {
 	p := NewPlan()
 
 	r := Rule{
@@ -65,7 +65,7 @@ func TestAddRemoveGetRule(t *testing.T) {
 	}
 	fmt.Println(fetchedRule)
 
-	err = p.RemoveRule("clients_delay")
+	err = p.DeleteRule("clients_delay")
 	if err != nil {
 		t.Fatal(err)
 	}
