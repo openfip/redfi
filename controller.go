@@ -9,7 +9,7 @@ import (
 	"github.com/tidwall/redcon"
 )
 
-var addr = ":6380"
+var configAddr = ":6380"
 
 const (
 	RULEADD      = "ruleadd"
@@ -76,7 +76,7 @@ func (c *Controller) parseRule(rule *Rule, buf string) error {
 }
 
 func (c *Controller) Start() error {
-	err := redcon.ListenAndServe(addr,
+	err := redcon.ListenAndServe(configAddr,
 		func(conn redcon.Conn, cmd redcon.Command) {
 			switch strings.ToLower(string(cmd.Args[0])) {
 			default:

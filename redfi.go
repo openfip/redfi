@@ -87,9 +87,8 @@ func (p *Proxy) Start() error {
 		log.Fatal(err)
 	}
 
-	fmt.Println("RedFI is listening on ", p.addr)
+	fmt.Println("\nRedFI is listening on", p.addr)
 	fmt.Println("Don't forget to point your client to that address.")
-	// go p.startAPI()
 
 	ctr, err := newController(p.plan)
 	if err != nil {
@@ -97,6 +96,7 @@ func (p *Proxy) Start() error {
 	}
 
 	go func() {
+		fmt.Println("\nRedFI Controller is listening on", configAddr)
 		err := ctr.Start()
 		if err != nil {
 			log.Fatal("encountered err while starting controller", err)
