@@ -6,11 +6,13 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/tidwall/redcon"
 	pool "gopkg.in/fatih/pool.v2"
 )
 
@@ -20,6 +22,17 @@ type Proxy struct {
 	addr     string
 	connPool pool.Pool
 	api      *API
+}
+
+func stripNewlines(s string) string {
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\r' || s[i] == '\n' {
+			s = strings.Replace(s, "\r", " ", -1)
+			s = strings.Replace(s, "\n", " ", -1)
+			break
+		}
+	}
+	return s
 }
 
 func factory(server string) func() (net.Conn, error) {
@@ -187,6 +200,16 @@ func (p *Proxy) faulter(dst, src net.Conn) {
 
 			if rule.ReturnEmpty {
 				_, err = dst.Write([]byte("$-1\r\n"))
+				if err != nil {
+					log.Println(err)
+				}
+				continue
+			}
+
+			if len(rule.ReturnErr) > 0 {
+				buf := []byte{}
+				buf = redcon.AppendError(buf, rule.ReturnErr)
+				_, err = dst.Write(buf)
 				if err != nil {
 					log.Println(err)
 				}

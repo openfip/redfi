@@ -24,6 +24,7 @@ const (
 	DELAY      = "delay"
 	DROP       = "drop"
 	RETEMPTY   = "return_empty"
+	RETERR     = "return_err"
 	CLIENTADDR = "client_addr"
 	PERCENTAGE = "percentage"
 )
@@ -64,6 +65,11 @@ func (c *Controller) parseRule(rule *Rule, buf string) error {
 		}
 	case CLIENTADDR:
 		rule.ClientAddr = kv[1]
+	case RETERR:
+		if len(kv[1]) <= 0 {
+			return fmt.Errorf("error message mustn't be empty")
+		}
+		rule.ReturnErr = kv[1]
 	case PERCENTAGE:
 		perc, err := strconv.Atoi(kv[1])
 		if err != nil {
@@ -104,8 +110,6 @@ func (c *Controller) Start() error {
 					conn.WriteError(err.Error())
 					return
 				}
-
-				fmt.Println(c.plan.ListRules())
 
 				conn.WriteString("OK")
 			case RULEDEL:

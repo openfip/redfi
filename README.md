@@ -22,53 +22,44 @@ RedFI is a proxy that sets between the client and the actual Redis server. On ev
 
 ## Usage
 First, download the [latest binary](https://github.com/redfi/redfi/releases/tag/v0.1).
-Once you're done open the terminal and create a plan.json
-```bash
-touch ~/plan.json
-```
-
-Then copy the following snippet into that file
-```javascript
-{
-    // the failure proxy will pick the first rule that applies to the client request
-    // so try to have the specific rules at the top, and the general ones at the bottom
-    "rules": [
-        // will always delay GET commands by 1000 milliseconds
-        {
-            "command": "GET",
-            "delay": 1000
-        },
-        // drop connections of client 159.0.147.225:9003 only 50% of the time
-        {
-            // clientAddr is prefix matched
-            // so you could match on subnet level too.
-            "clientAddr": "159.0.147.225:9003",
-            "percentage": 50,
-            "drop": true
-        },
-        // this rule would be selected for all commands that aren't by 159.0.147.225:9003
-        // and aren't GET commands.
-        // But it will return nil to the client instead of the real response
-        // only 50% of the time
-        {
-            "percentage": 50,
-            "returnEmpty": true
-        }
-    ]
-}
-```
 
 After that, execute the binary we downloaded earlier
 ```bash
-$ ./redfi -addr 127.0.0.1:8083 -redis 127.0.0.1:6379 -plan ~/plan.json
+$ ./redfi -addr 127.0.0.1:8083 -redis 127.0.0.1:6379
 
-RedFI is listening on  127.0.0.1:8083
+RedFI is listening on 127.0.0.1:8083
 Don't forget to point your client to that address.
+
+RedFI Controller is listening on :6380
 ```
 - **addr**: is the address on which the proxy listens on for new connections.
 - **redis**: address of the actual Redis server to proxy commands/connections to.
 - **plan**: path to the json file that contains the rules/scenarios for fault injection.
 
+An example of controlling the proxy rules
+[![asciicast](https://asciinema.org/a/CJyxhZXfk7aaGJ9qfU865Gcy6.png)](https://asciinema.org/a/CJyxhZXfk7aaGJ9qfU865Gcy6)
+
+## Config Commands
+
+Point redis-cli to RedFI Controller port
+```bash
+$ redi-cli -p 6380
+```
+
+### RULEADD rule_name option=value [option=value]
+Adds a rule to the engine of RedFI
+
+### Faults Options
+- `delay`: adds a delay, the value unit is milliseconds. Example: `delay=200`.
+- `return_empty`: returns an empty response. Example: `return_empty=true`.
+- `return_err`: returns an error response. Example: `return_err=ERR bad command.`
+- `drop`: drop connections, the value is a boolean. Example: `drop=true`.
+
+### Blast limiters
+They limit the radius of the blast
+- `command`: only apply failure on certain commands. For example `command=HGET`.
+- `percentage`: limits how many times it applies the rule. For example `percentage=25` applies only to 25% of matching commands.
+- `client_addr`: scopes the radius to clients coming from a certain subnet,ip,ip:port. For example `client_addr=`
 
 ## Project Status
 RedFI is still in its early stages, so expect rapid changes.  

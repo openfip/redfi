@@ -34,6 +34,7 @@ type Rule struct {
 	Delay       int    `json:"delay,omitempty"`
 	Drop        bool   `json:"drop,omitempty"`
 	ReturnEmpty bool   `json:"return_empty,omitempty"`
+	ReturnErr   string `json:"return_err,omitempty"`
 	Percentage  int    `json:"percentage,omitempty"`
 	// SelectRule does prefix matching on this value
 	ClientAddr string `json:"client_addr,omitempty"`
@@ -59,6 +60,9 @@ func (r Rule) String() string {
 	}
 	if r.ReturnEmpty {
 		buf = append(buf, fmt.Sprintf("return_empty=%t", r.ReturnEmpty))
+	}
+	if len(r.ReturnErr) > 0 {
+		buf = append(buf, fmt.Sprintf("return_err=%s", r.ReturnErr))
 	}
 	if len(r.ClientAddr) > 0 {
 		buf = append(buf, fmt.Sprintf("client_addr=%s", r.ClientAddr))
@@ -186,6 +190,9 @@ func (p *Plan) AddRule(r Rule) error {
 
 	p.m.Lock()
 	defer p.m.Unlock()
+	if _, ok := p.rulesMap[r.Name]; ok {
+		return fmt.Errorf("a rule by the same name exists")
+	}
 
 	p.Rules = append(p.Rules, &r)
 	p.rulesMap[r.Name] = len(p.Rules) - 1
