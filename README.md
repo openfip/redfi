@@ -59,7 +59,7 @@ Adds a rule to the engine of RedFI
 They limit the radius of the blast
 - `command`: only apply failure on certain commands. For example `command=HGET`.
 - `percentage`: limits how many times it applies the rule. For example `percentage=25` applies only to 25% of matching commands.
-- `client_addr`: scopes the radius to clients coming from a certain subnet,ip,ip:port. For example `client_addr=`
+- `client_addr`: scopes the radius to clients coming from a certain subnet,ip,ip:port. For example `client_addr=192.0.0.1`
 
 ## Project Status
 RedFI is still in its early stages, so expect rapid changes.  
