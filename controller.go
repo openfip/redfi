@@ -64,6 +64,9 @@ func (c *Controller) parseRule(rule *Rule, buf string) error {
 			rule.ReturnEmpty = true
 		}
 	case CLIENTADDR:
+		if len(kv[1]) <= 0 {
+			return fmt.Errorf("client addr mustn't be empty")
+		}
 		rule.ClientAddr = kv[1]
 	case RETERR:
 		if len(kv[1]) <= 0 {
