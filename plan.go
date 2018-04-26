@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 var (
@@ -39,6 +40,34 @@ type Rule struct {
 	Command    string `json:"command,omitempty"`
 	// filled by marshalCommand
 	marshaledCmd []byte
+	hits         uint64
+}
+
+func (r Rule) String() string {
+	buf := []string{}
+	buf = append(buf, r.Name)
+
+	// count hits
+	hits := atomic.LoadUint64(&r.hits)
+	buf = append(buf, fmt.Sprintf("hits=%d", hits))
+
+	if r.Delay > 0 {
+		buf = append(buf, fmt.Sprintf("delay=%d", r.Delay))
+	}
+	if r.Drop {
+		buf = append(buf, fmt.Sprintf("drop=%t", r.Drop))
+	}
+	if r.ReturnEmpty {
+		buf = append(buf, fmt.Sprintf("return_empty=%t", r.ReturnEmpty))
+	}
+	if len(r.ClientAddr) > 0 {
+		buf = append(buf, fmt.Sprintf("client_addr=%s", r.ClientAddr))
+	}
+	if r.Percentage > 0 {
+		buf = append(buf, fmt.Sprintf("percentage=%d", r.Percentage))
+	}
+
+	return strings.Join(buf, " ")
 }
 
 // Parse the plan.json file
@@ -137,6 +166,7 @@ func (p *Plan) SelectRule(clientAddr string, buf []byte) *Rule {
 	if chosenRule.Percentage > 0 && rand.Intn(100) > chosenRule.Percentage {
 		return nil
 	}
+	atomic.AddUint64(&chosenRule.hits, 1)
 	return chosenRule
 }
 
@@ -144,6 +174,10 @@ func (p *Plan) SelectRule(clientAddr string, buf []byte) *Rule {
 func (p *Plan) AddRule(r Rule) error {
 	if r.Percentage < 0 || r.Percentage > 100 {
 		return fmt.Errorf("Percentage in rule #%s is malformed. it must within 0-100", r.Name)
+	}
+
+	if len(r.Name) <= 0 {
+		return fmt.Errorf("Name of rule is required")
 	}
 
 	if len(r.Command) > 0 {

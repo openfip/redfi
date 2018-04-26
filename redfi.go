@@ -57,7 +57,7 @@ func (p *Proxy) startAPI() {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Recoverer)
+	// r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	// RESTy routes for "rules" resource
@@ -73,7 +73,9 @@ func (p *Proxy) startAPI() {
 		})
 	})
 
-	err := http.ListenAndServe(":3000", r)
+	// @TODO(kl): get api port from cli
+	fmt.Println("API is listening on :8081")
+	err := http.ListenAndServe(":8081", r)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,7 +89,19 @@ func (p *Proxy) Start() error {
 
 	fmt.Println("RedFI is listening on ", p.addr)
 	fmt.Println("Don't forget to point your client to that address.")
-	go p.startAPI()
+	// go p.startAPI()
+
+	ctr, err := newController(p.plan)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {
+		err := ctr.Start()
+		if err != nil {
+			log.Fatal("encountered err while starting controller", err)
+		}
+	}()
 
 	for {
 		conn, err := ln.Accept()
@@ -140,7 +154,6 @@ func (p *Proxy) pipe(dst, src net.Conn) {
 			log.Println(err)
 			continue
 		}
-
 	}
 }
 
