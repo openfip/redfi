@@ -5,6 +5,7 @@ body {
 
 .header {
     margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 #features {
@@ -14,6 +15,18 @@ body {
 #features h6 {
     font-weight: bold;
     margin-top: 10px;
+}
+
+.demo-title {
+    text-align: center;
+    text-transform: uppercase;
+    border-top: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+    padding: 10px;
+    font-size: 1.4em;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    background: rgba(1,1,1,0.02);
 }
 
 .box {
